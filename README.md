@@ -8,12 +8,12 @@ A friendly tool for managing your yocto/poky projects :)
 What does this mean? When setting up your local environment for building a yocto/poky based project, you usually follow these steps:
 (More or less of course, there are lots of variations based on your worklow and personal likings.)
 
-1) Get poky (download and unpack, or git clone)
-2) Get the layers (download and unpack, git clone, svn co, whatever) that are necessary for your build
-3) Init the build directory by source-ing poky/oe-init-build-env
-4) Modify build/conf/bblayers.conf to include the additional non-poky layers.
-5) Modify build/conf/local.conf to include the needed configuration options, like MACHINE, xxx
-6) Run your desired build in the shell that source-ed poky/oe-init-build-env
+1. Get poky (download and unpack, or git clone)
+2. Get the layers (download and unpack, git clone, svn co, whatever) that are necessary for your build
+3. Init the build directory by source-ing poky/oe-init-build-env
+4. Modify build/conf/bblayers.conf to include the additional non-poky layers.
+5. Modify build/conf/local.conf to include the needed configuration options, like MACHINE, xxx
+6. Run your desired build in the shell that source-ed poky/oe-init-build-env
 
 You see, there are quite some steps involved. And most of them (especially 4 and 5) allow for a lot of errors that are easy to avoid/spot for experienced users, but hinder easy reproduction by third persons or users.
 
@@ -38,9 +38,9 @@ How dows it work?
 
 Blubber borrows a lot of ideas from make. That means, the only thing your have to do is to drop a _Blubberfile_ in the directory that you want to work in. (So far it has to be named Blubberfile explicitly. See ToDo list below.) Then you can fire up blubber and be done. Blubber itself is a one-file script that can be dropped into the project directory, but should also work fine when called from $PATH or such. So this is how you set up your build with Blubber:
 
-0) Put blubber.py into a directory in your $PATH or just the project directory that you want to work in.
-1) Get the Blubberfile for your project
-2) Fire up blubber.py setup
+0. Put blubber.py into a directory in your $PATH or just the project directory that you want to work in.
+1. Get the Blubberfile for your project
+2. Fire up blubber.py setup
 ... Done. Now you can run your builds - either using the traditional way, or by issuing "blubber.py run bitbake core-image-minimal" for example. BLubber will take everything after the "run" command and just execute it in the build directory as if you had prepared the shell and then typed it manually. It has the advantage though, that its not necessary to keep track of the shells state anymore. And the shell will be unchanged afterwards, as blubber intently uses a sub shell.
 
 Design decisions / ToDo List
