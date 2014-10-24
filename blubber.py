@@ -108,7 +108,7 @@ def print_help():
 	print("  help      Shows this help message")
 	print("  create    Creates a minimal Blubberfile")
 	print("  setup     Sets up the layers and build directory according to the Blubberfile")
-	print("  shell     Gives you a shell initialized for the project. (defunct)")
+	print("  shell     Gives you a shell initialized for the project")
 	print("  run       Forwards everything after the command to a shell initialized for the project")
 	quit(0)
 
@@ -209,7 +209,8 @@ elif sys.argv[1] == "setup":
 	setup_bblayers(c)
 	setup_local(c)
 elif sys.argv[1] == "shell":
-	pass
+	cmd = ". ./poky/oe-init-build-env &> /dev/null; /bin/bash"
+	subprocess.call(cmd, shell=True, executable="/bin/bash")
 elif sys.argv[1] == "run":
 	a = sys.argv[2:]
 	cmd = ". ./poky/oe-init-build-env &> /dev/null; "
