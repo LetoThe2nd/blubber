@@ -41,7 +41,7 @@ Blubber borrows a lot of ideas from make. That means, the only thing your have t
 0. Put blubber.py into a directory in your $PATH or just the project directory that you want to work in.
 1. Get the Blubberfile for your project
 2. Fire up blubber.py setup
-... Done. Now you can run your builds - either using the traditional way, or by issuing "blubber.py run bitbake core-image-minimal" for example. BLubber will take everything after the "run" command and just execute it in the build directory as if you had prepared the shell and then typed it manually. It has the advantage though, that its not necessary to keep track of the shells state anymore. And the shell will be unchanged afterwards, as blubber intently uses a sub shell.
+... Done. Now you can run your builds - either using the traditional way, or by issuing "blubber.py run bitbake core-image-minimal" for example. Blubber will take everything after the "run" command and just execute it in the build directory as if you had prepared the shell and then typed it manually. It has the advantage though, that its not necessary to keep track of the shells state anymore. And the shell will be unchanged afterwards, as blubber intently uses a sub shell.
 
 Design decisions / ToDo List
 ----------------------------
