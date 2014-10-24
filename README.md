@@ -32,6 +32,8 @@ Despite that, it can already do some magic:
 - Accordingly setting up build/conf/bblayers.conf
 - Setting up build/conf/local.conf with a set of predefined options
 - Running arbitrary commands with proper shell setup (source-ed poky/oe-init-build-env) for the configured project.
+- Environment variables are honoured during the setup step and can be used to override the Blubberfile settings
+- Opening a shell properly initialized for the build
 
 How dows it work?
 -----------------
@@ -50,10 +52,8 @@ Blubber intently is constructed as a one-file script so far. This means you can 
 What shall go into blubber in the (near) future?
 - Error checking!
 - Differently named Blubberfiles (think: make -f Foobar.txt)
-- Passing(overriding) config options through environment variables
 - Getting layers from svn, ftp, tarballs, or just plain file copy
 - Refreshing the Blubberfile after you changed something in conf/{local,bblayers}.conf
-- Providing a subshell for direct work on the project
 - Code base improvements...
 
 If sounds interesting, please have try - and scream loudly if you have comments, questions...
