@@ -40,10 +40,13 @@ class Fragment:
 		return unicode(self.__repr__())
 	def tofile(self):
 		icontent = ""
-		if self.longcontent:
-			icontent = "\"" + self.content + "\""
-		else:
-			icontent = self.content
+		try:
+			icontent = "\"" + os.environ[self.keyword] + "\""
+		except KeyError:
+			if self.longcontent:
+				icontent = "\"" + self.content + "\""
+			else:
+				icontent = self.content
 		return self.keyword + " " + self.assignment + " " + icontent
 
 def exit_fail(message):
