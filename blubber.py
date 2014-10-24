@@ -6,6 +6,10 @@ import sys
 
 FILENAME = "Blubberfile"
 LINEFEED = "\n"
+SOURCE_MAGIC = ". ./poky/oe-init-build-env &> /dev/null"
+SHELL = "/bin/bash"
+LAYERFILE = "build/conf/bblayers.conf"
+CONFFILE = "build/conf/local.conf"
 
 SECTIONSTART_LAYERS = "[layers]"
 SECTIONSTART_LOCAL = "[local]"
@@ -131,7 +135,7 @@ def get_layers(obj):
 				subprocess.call(cmd, shell=True)
 
 def setup_bblayers(obj):
-	bbfile = "build/conf/bblayers.conf"
+	bbfile = LAYERFILE
 	if not os.path.isfile(bbfile) or obj == None or not hasattr(obj, "layers"):
 		return
 	with open(bbfile) as f:
@@ -155,7 +159,7 @@ def setup_bblayers(obj):
 	f.close()
 
 def setup_local(obj):
-	localfile = "build/conf/local.conf"
+	localfile = CONFFILE
 	if not os.path.isfile(localfile) or obj == None or not hasattr(obj, "local"):
 		return
 	with open(localfile) as f:
@@ -208,15 +212,15 @@ elif sys.argv[1] == "create":
 elif sys.argv[1] == "setup":
 	c = get_config(FILENAME)
 	get_layers(c)
-	subprocess.call(". ./poky/oe-init-build-env &> /dev/null", shell=True, executable="/bin/bash")
+	subprocess.call(SOURCE_MAGIC, shell=True, executable=SHELL)
 	setup_bblayers(c)
 	setup_local(c)
 elif sys.argv[1] == "shell":
-	cmd = ". ./poky/oe-init-build-env &> /dev/null; /bin/bash"
-	subprocess.call(cmd, shell=True, executable="/bin/bash")
+	cmd = SOURCE_MAGIC + "; " + SHELL
+	subprocess.call(cmd, shell=True, executable=SHELL)
 elif sys.argv[1] == "run":
 	a = sys.argv[2:]
-	cmd = ". ./poky/oe-init-build-env &> /dev/null; "
+	cmd = SOURCE_MAGIC + "; "
 	for i in a:
 		cmd += i.strip() + " "
-	subprocess.call(cmd, shell=True, executable="/bin/bash")
+	subprocess.call(cmd, shell=True, executable=SHELL)
