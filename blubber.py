@@ -13,11 +13,13 @@ CONFFILE = "build/conf/local.conf"
 
 SECTIONSTART_LAYERS = "[layers]"
 SECTIONSTART_LOCAL = "[local]"
+SECTIONSTART_BLUBBER = "[blubber]"
 
 class Config:
 	def __init__(self):
 		self.layers = []
 		self.local = []
+		self.blubber = {}
 
 class Fragment:
 	def __init__(self, s):
@@ -96,6 +98,17 @@ def get_config(fname):
 					conf.local.append(ass)
 					b = ""
 					first = -1
+	trig = 0
+	for l in content:
+		i = l.strip()
+		if i == SECTIONSTART_BLUBBER:
+			trig = 1
+		elif i.startswith("[") and i.endswith("]"):
+			trig = 0
+		elif trig:
+			b_in = l.split("=");
+			if len(b_in) == 2:
+				conf.blubber[b_in[0].strip(" \"\r\n")] = b_in[1].strip(" \"\r\n")
 	return conf
 
 def to_blubberfile(obj):
