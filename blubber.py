@@ -125,6 +125,8 @@ def to_blubberfile(obj):
 
 def print_help():
 	print("Usage:")
+	print("  build     bitbakes the default target if DEFAULT_BUILD is set in the")
+	print("              [blubber] section of the Blubberfile")
 	print("  help      Shows this help message")
 	print("  create    Creates a minimal Blubberfile")
 	print("  setup     Sets up the layers and build directory according to the Blubberfile")
@@ -237,3 +239,11 @@ elif sys.argv[1] == "run":
 	for i in a:
 		cmd += i.strip() + " "
 	subprocess.call(cmd, shell=True, executable=SHELL)
+elif sys.argv[1] == "build":
+	c = get_config(FILENAME)
+	if "BUILD_DEFAULT" in c.blubber:
+		print("will build default target " + c.blubber["BUILD_DEFAULT"])
+		cmd = SOURCE_MAGIC + "; bitbake " + c.blubber["BUILD_DEFAULT"]
+		subprocess.call(cmd, shell=True, executable=SHELL)
+	else:
+		print("no DEFAULT_BUILD set, aborting.")
