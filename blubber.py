@@ -118,6 +118,9 @@ def to_blubberfile(obj):
 	f.write(SECTIONSTART_LAYERS + LINEFEED)
 	if not obj is None and hasattr(obj, "layers"):
 		pass
+	else:
+		f.write("git;poky;git://git.yoctoproject.org/poky.git")
+		f.write(LINEFEED)
 	f.write(SECTIONSTART_LOCAL + LINEFEED)
 	if not obj is None and hasattr(obj, "local"):
 		pass
