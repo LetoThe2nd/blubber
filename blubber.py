@@ -121,6 +121,9 @@ def to_blubberfile(obj):
 	f.write(SECTIONSTART_LOCAL + LINEFEED)
 	if not obj is None and hasattr(obj, "local"):
 		pass
+	f.write(SECTIONSTART_BLUBBER + LINEFEED)
+	if not obj is None and hasattr(obj, "blubber"):
+		pass
 	f.close()
 
 def print_help():
