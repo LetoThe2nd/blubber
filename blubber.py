@@ -224,6 +224,10 @@ def setup_local(obj):
 		f.write(i + LINEFEED)
 	f.close()
 
+def execute_poky_command(cmd):
+	cmd_intern = SOURCE_MAGIC + "; " + cmd
+	subprocess.call(cmd_intern, shell=True, executable=SHELL)
+
 if len(sys.argv) <= 1:
 	print_help()
 if sys.argv[1] == "help":
@@ -233,23 +237,21 @@ elif sys.argv[1] == "create":
 elif sys.argv[1] == "setup":
 	c = get_config(FILENAME)
 	get_layers(c)
-	subprocess.call(SOURCE_MAGIC, shell=True, executable=SHELL)
+	execute_poky_command("")
 	setup_bblayers(c)
 	setup_local(c)
 elif sys.argv[1] == "shell":
-	cmd = SOURCE_MAGIC + "; " + SHELL
-	subprocess.call(cmd, shell=True, executable=SHELL)
+	execute_poky_command(SHELL)
 elif sys.argv[1] == "run":
 	a = sys.argv[2:]
-	cmd = SOURCE_MAGIC + "; "
+	cmd = ""
 	for i in a:
 		cmd += i.strip() + " "
-	subprocess.call(cmd, shell=True, executable=SHELL)
+	execute_poky_command(cmd)
 elif sys.argv[1] == "build":
 	c = get_config(FILENAME)
 	if "BUILD_DEFAULT" in c.blubber:
 		print("will build default target " + c.blubber["BUILD_DEFAULT"])
-		cmd = SOURCE_MAGIC + "; bitbake " + c.blubber["BUILD_DEFAULT"]
-		subprocess.call(cmd, shell=True, executable=SHELL)
+		execute_poky_command("bitbake " + c.blubber["BUILD_DEFAULT"])
 	else:
 		print("no DEFAULT_BUILD set, aborting.")
