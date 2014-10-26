@@ -234,6 +234,8 @@ def print_help():
 	print("    shell          Gives you a shell initialized for the project")
 	print("    run            Forwards all parameters after the command to a")
 	print("                     shell initialized for the project")
+	print("    validate       Tries to test and fix the build platform for required tools and packages")
+	print("                     as far as possible.")
 	quit(0)
 
 def get_layers(obj):
@@ -346,6 +348,8 @@ while (len(sys.argv) > cmd_index) and (sys.argv[cmd_index].startswith("-")):
 
 if (len(sys.argv) <= cmd_index) or (sys.argv[cmd_index] == "help"):
 	print_help()
+elif sys.argv[cmd_index] == "validate":
+	LOCAL_PLATFORM.validate()
 elif sys.argv[cmd_index] == "create":
 	to_blubberfile(None)
 elif sys.argv[cmd_index] == "setup":
