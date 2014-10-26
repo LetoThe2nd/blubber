@@ -270,3 +270,6 @@ elif sys.argv[cmd_index] == "build":
 		execute_poky_command("bitbake " + c.blubber["BUILD_DEFAULT"])
 	else:
 		print("no DEFAULT_BUILD set, aborting.")
+else:
+	print("could not recognize commmand '" + sys.argv[cmd_index] + "'")
+	print_help()
