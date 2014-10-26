@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import platform
 import subprocess
 import sys
 
@@ -10,7 +11,6 @@ SOURCE_MAGIC = ". ./poky/oe-init-build-env &> /dev/null"
 SHELL = "/bin/bash"
 LAYERFILE = "build/conf/bblayers.conf"
 CONFFILE = "build/conf/local.conf"
-LINUX = False
 
 SECTIONSTART_LAYERS = "[layers]"
 SECTIONSTART_LOCAL = "[local]"
@@ -55,6 +55,21 @@ class Fragment:
 			else:
 				icontent = self.content
 		return self.keyword + " " + self.assignment + " " + icontent
+
+class Blubber_Platform:
+	def __init__(self):
+		self.System = platform.system()
+		self.Linux = None
+		if not self.System == "Linux":
+			print("We're not running on a linux platform.")
+			print("  All commands that would be executed in the poky environment will be disabled.")
+			print("  Other things might also be broken or malfunctioning in funny ways.")
+		else:
+			self.Linux = platform.linux_distribution()
+	def is_Linux(self):
+		return (self.System == "Linux")
+
+LOCAL_PLATFORM = Blubber_Platform()
 
 def exit_fail(message):
 	print("aborting: " + message)
@@ -232,18 +247,11 @@ def setup_local(obj):
 	f.close()
 
 def execute_poky_command(cmd):
-	if LINUX:
+	if LOCAL_PLATFORM.is_Linux():
 		cmd_intern = SOURCE_MAGIC + "; " + cmd
 		subprocess.call(cmd_intern, shell=True, executable=SHELL)
 
 # Here is the actual main part!
-uname = os.uname()
-if not uname.sysname == "Linux":
-	print("We're not running on a linux platform.")
-	print("  All commands that would be executed in the poky environment will be disabled.")
-	print("  Other things might also be broken or malfunctioning in funny ways.")
-else:
-	LINUX = True
 
 if len(sys.argv) <= 1:
 	print_help()
