@@ -132,13 +132,19 @@ def to_blubberfile(obj):
 
 def print_help():
 	print("Usage:")
-	print("  build     bitbakes the default target if DEFAULT_BUILD is set in the")
-	print("              [blubber] section of the Blubberfile")
-	print("  help      Shows this help message")
-	print("  create    Creates a minimal Blubberfile")
-	print("  setup     Sets up the layers and build directory according to the Blubberfile")
-	print("  shell     Gives you a shell initialized for the project")
-	print("  run       Forwards everything after the command to a shell initialized for the project")
+	print("  blubber.py [options] command [parameters]")
+	print("  Supported options:")
+	print("    -f filename    Use 'filename' as configuration instead of")
+	print("                     default 'Blubberfile'")
+	print("  Supported commands:")
+	print("    build          bitbakes the default target if DEFAULT_BUILD is set in the")
+	print("                     [blubber] section of the Blubberfile")
+	print("    help           Shows this help message")
+	print("    create         Creates a minimal Blubberfile")
+	print("    setup          Sets up the layers and build directory according to the Blubberfile")
+	print("    shell          Gives you a shell initialized for the project")
+	print("    run            Forwards all parameters after the command to a")
+	print("                     shell initialized for the project")
 	quit(0)
 
 def get_layers(obj):
