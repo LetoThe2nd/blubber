@@ -104,6 +104,44 @@ class Blubber_Platform:
 			self.Linux = platform.linux_distribution()
 	def is_Linux(self):
 		return (self.System == "Linux")
+	def validate(self):
+		print("Trying to run git...")
+		result = subprocess.call("git --version", shell=True)
+		if result == 0:
+			print("...looks good!")
+		else:
+			print("...this didn't work, please make sure 'git' is installed!")
+		if not self.is_Linux():
+			return
+		print("This seems to be a Linux platform, maybe we can do a little bit more.")
+		if (self.Linux[0] == 'Ubuntu') or (self.Linux[0] == "debian"):
+			print("Found " + self.Linux[0] + "!")
+			print("Checking for needed packages...")
+			UBUNTU_PACKAGES = ["gawk", "wget", "git-core", "diffstat", "unzip", "texinfo", "gcc-multilib", "build-essential", "chrpath", "libsdl1.2-dev", "xterm"]
+			missing = ""
+			for package in UBUNTU_PACKAGES:
+				miss = subprocess.call("2>/dev/null 1>/dev/null dpkg -s " + package, shell=True)
+				if not miss == 0:
+					missing += package + " "
+			if not missing == "":
+				print("Seems you are missing some packages: " + missing)
+				if query_yes_no("Shall we try to install whats missing?"):
+					subprocess.call("sudo apt-get install " + missing, shell=True)
+			else:
+				print("Everything we need is installed, great!")
+		elif self.Linux[0] == "Fedora":
+			print("Found " + self.Linux[0] + " but not fully supported yet, sorry!")
+		elif self.Linux[0] == "openSUSE":
+			print("Found " + self.Linux[0] + " but not fully supported yet, sorry!")
+		elif self.Linux[0] == "CentOS":
+			print("Found " + self.Linux[0] + " but not fully supported yet, sorry!")
+		elif self.Linux[0] == "arch":
+			print("Found " + self.Linux[0] + " but not fully supported yet, sorry!")
+		elif self.Linux[0] == "Gentoo Base System":
+			print("Found " + self.Linux[0] + " but not fully supported yet, sorry!")
+		else:
+			#other distributions to follow....
+			pass
 
 LOCAL_PLATFORM = Blubber_Platform()
 
