@@ -230,25 +230,40 @@ def execute_poky_command(cmd):
 
 if len(sys.argv) <= 1:
 	print_help()
-if sys.argv[1] == "help":
+	exit(0)
+cmd_index = 1
+while (len(sys.argv) > cmd_index) and (sys.argv[cmd_index].startswith("-")):
+	if sys.argv[cmd_index] == "-f":
+		if len(sys.argv) > cmd_index + 1:
+			FILENAME = sys.argv[cmd_index + 1]
+			print("using Blubberfile '" + FILENAME + "'")
+			cmd_index = cmd_index + 2
+		else:
+			print("option -f needs additional Blubberfile path to be passed")
+			cmd_index = cmd_index + 1
+	else:
+		print("option " + sys.argv[cmd_index] + " could not be recognized, skipping")
+		cmd_index = cmd_index + 1
+
+if (len(sys.argv) <= cmd_index) or (sys.argv[cmd_index] == "help"):
 	print_help()
-elif sys.argv[1] == "create":
+elif sys.argv[cmd_index] == "create":
 	to_blubberfile(None)
-elif sys.argv[1] == "setup":
+elif sys.argv[cmd_index] == "setup":
 	c = get_config(FILENAME)
 	get_layers(c)
 	execute_poky_command("")
 	setup_bblayers(c)
 	setup_local(c)
-elif sys.argv[1] == "shell":
+elif sys.argv[cmd_index] == "shell":
 	execute_poky_command(SHELL)
-elif sys.argv[1] == "run":
-	a = sys.argv[2:]
+elif sys.argv[cmd_index] == "run":
+	a = sys.argv[cmd_index + 1:]
 	cmd = ""
 	for i in a:
 		cmd += i.strip() + " "
 	execute_poky_command(cmd)
-elif sys.argv[1] == "build":
+elif sys.argv[cmd_index] == "build":
 	c = get_config(FILENAME)
 	if "BUILD_DEFAULT" in c.blubber:
 		print("will build default target " + c.blubber["BUILD_DEFAULT"])
