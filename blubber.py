@@ -10,6 +10,7 @@ SOURCE_MAGIC = ". ./poky/oe-init-build-env &> /dev/null"
 SHELL = "/bin/bash"
 LAYERFILE = "build/conf/bblayers.conf"
 CONFFILE = "build/conf/local.conf"
+LINUX = False
 
 SECTIONSTART_LAYERS = "[layers]"
 SECTIONSTART_LOCAL = "[local]"
@@ -225,8 +226,18 @@ def setup_local(obj):
 	f.close()
 
 def execute_poky_command(cmd):
-	cmd_intern = SOURCE_MAGIC + "; " + cmd
-	subprocess.call(cmd_intern, shell=True, executable=SHELL)
+	if LINUX:
+		cmd_intern = SOURCE_MAGIC + "; " + cmd
+		subprocess.call(cmd_intern, shell=True, executable=SHELL)
+
+# Here is the actual main part!
+uname = os.uname()
+if not uname.sysname == "Linux":
+	print("We're not running on a linux platform.")
+	print("  All commands that would be executed in the poky environment will be disabled.")
+	print("  Other things might also be broken or malfunctioning in funny ways.")
+else:
+	LINUX = True
 
 if len(sys.argv) <= 1:
 	print_help()
