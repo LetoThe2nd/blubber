@@ -191,6 +191,8 @@ def get_config(fname):
 					b = ""
 					first = -1
 	trig = 0
+	b = ""
+	first = -1
 	for l in content:
 		i = l.strip()
 		if i == SECTIONSTART_BLUBBER:
@@ -198,9 +200,23 @@ def get_config(fname):
 		elif i.startswith("[") and i.endswith("]"):
 			trig = 0
 		elif trig:
-			b_in = l.split("=");
-			if len(b_in) == 2:
-				conf.blubber[b_in[0].strip(" \"\r\n")] = b_in[1].strip(" \"\r\n")
+			if not i == "" and not i.startswith("#"):
+				if first == -1:
+					first = content.index(l)
+				b += i
+				if b.endswith("\\"):
+					b = b[:-1] + "\r\n"
+				else:
+					b_in = b.split("=");
+					if len(b_in) == 2:
+						key = b_in[0].strip(" \"\r\n")
+						if not key.endswith("MESSAGE"):
+							conf.blubber[key] = b_in[1].strip(" \"").replace("\r","").replace("\n","")
+						else:
+							conf.blubber[key] = b_in[1].strip(" \"\r\n")
+
+					b = ""
+					first = -1
 	return conf
 
 def to_blubberfile(obj):
