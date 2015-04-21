@@ -249,9 +249,19 @@ def get_layers(obj):
 			cmd = "git clone " + b[2] + " " + b[1]
 			subprocess.call(cmd, shell=True)
 			if len(b) > 3:
-				cmd = "cd " + b[1] + "; git checkout -b blubber_" + b[3] + " " + b[3]
-				print("want to do: " + cmd)
-				subprocess.call(cmd, shell=True)
+				cmd = None
+				g = b[3].split(":")
+				if len(g) == 1:
+					cmd = "cd " + b[1] + "; git checkout -b blubber_" + b[3] + " " + b[3]
+				elif g[0] == "tag" or g[0] == "commit":
+					cmd = "cd " + b[1] + "; git checkout -b blubber_" + g[1] + " " +g[1]
+				elif g[0] == "branch":
+					cmd = "cd " + b[1] + "; git checkout -b blubber_" + g[1] + " origin/" + g[1]
+				else:
+					print("no idea what \"" + b[3] + "\" means, keeping a normal clone")
+				if cmd:
+					print("want to do: " + cmd)
+					subprocess.call(cmd, shell=True)
 
 def setup_bblayers(obj):
 	bbfile = LAYERFILE
