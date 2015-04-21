@@ -16,6 +16,8 @@ SECTIONSTART_LAYERS = "[layers]"
 SECTIONSTART_LOCAL = "[local]"
 SECTIONSTART_BLUBBER = "[blubber]"
 
+LAYER_SEPARATOR = ";"
+
 # taken from http://stackoverflow.com/a/3041990
 # modification: raw_input() was renamed to input() in python3
 #begin
@@ -238,30 +240,44 @@ def print_help():
 	print("                     as far as possible.")
 	quit(0)
 
+def get_git_layer(layer):
+	b = layer.split(LAYER_SEPARATOR)
+	if os.path.isdir(b[1]):
+		print(b[1] + "seems to already exist, checking...")
+		result = subprocess.call("cd " + b[1] + "; git status", shell=True)
+		if result == 0:
+			print("...looks good!")
+			print("We didn't clone " + b[1] + " now but it seems to be intact.");
+		else:
+			print("...this didn't work!")
+			print("We didn't clone " + b[1] + " now but it seems to be broken.");
+		print("In any case, please manually check the state of the layer!")
+	else:
+		cmd = "git clone " + b[2] + " " + b[1]
+		subprocess.call(cmd, shell=True)
+		if len(b) > 3:
+			cmd = None
+			g = b[3].split(":")
+			if len(g) == 1:
+				cmd = "cd " + b[1] + "; git checkout -b blubber_" + b[3] + " " + b[3]
+			elif g[0] == "tag" or g[0] == "commit":
+				cmd = "cd " + b[1] + "; git checkout -b blubber_" + g[1] + " " +g[1]
+			elif g[0] == "branch":
+				cmd = "cd " + b[1] + "; git checkout -b blubber_" + g[1] + " origin/" + g[1]
+			else:
+				print("no idea what \"" + b[3] + "\" means, keeping a normal clone")
+			if cmd:
+				subprocess.call(cmd, shell=True)
+
 def get_layers(obj):
 	if obj is None or not hasattr(obj, "layers"):
 		return;
 	for l in obj.layers:
-		b = l.split(";")
+		b = l.split(LAYER_SEPARATOR)
 		if len(b) < 3:
 			break
 		elif b[0] == "git" or b[0] == "git-master":
-			cmd = "git clone " + b[2] + " " + b[1]
-			subprocess.call(cmd, shell=True)
-			if len(b) > 3:
-				cmd = None
-				g = b[3].split(":")
-				if len(g) == 1:
-					cmd = "cd " + b[1] + "; git checkout -b blubber_" + b[3] + " " + b[3]
-				elif g[0] == "tag" or g[0] == "commit":
-					cmd = "cd " + b[1] + "; git checkout -b blubber_" + g[1] + " " +g[1]
-				elif g[0] == "branch":
-					cmd = "cd " + b[1] + "; git checkout -b blubber_" + g[1] + " origin/" + g[1]
-				else:
-					print("no idea what \"" + b[3] + "\" means, keeping a normal clone")
-				if cmd:
-					print("want to do: " + cmd)
-					subprocess.call(cmd, shell=True)
+			get_git_layer(l)
 
 def setup_bblayers(obj):
 	bbfile = LAYERFILE
