@@ -245,7 +245,7 @@ def get_layers(obj):
 		b = l.split(";")
 		if len(b) < 3:
 			break
-		elif b[0] == "git":
+		elif b[0] == "git" or b[0] == "git-master":
 			cmd = "git clone " + b[2] + " " + b[1]
 			subprocess.call(cmd, shell=True)
 			if len(b) > 3:
@@ -270,7 +270,9 @@ def setup_bblayers(obj):
 	p = os.getcwd()
 	for i in obj.layers:
 		a = i.split(";")
-		if not a[1] == "poky":
+		if a[0] == "subrepo":
+			bb.insert(found + 1, "  " + p + "/" + a[2] + "/" + a[1] + " \\" + LINEFEED);
+		elif not a[1] == "poky" and not a[0].endswith("-master"):
 			bb.insert(found + 1, "  " + p + "/" + a[1] + " \\" + LINEFEED);
 	f = open(bbfile, "w")
 	for i in bb:
