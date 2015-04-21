@@ -257,7 +257,7 @@ def get_git_layer(layer):
 		subprocess.call(cmd, shell=True)
 		if len(b) > 3:
 			cmd = None
-			g = b[3].split(":")
+			g = b[3].split("=")
 			if len(g) == 1:
 				cmd = "cd " + b[1] + "; git checkout -b blubber_" + b[3] + " " + b[3]
 			elif g[0] == "tag" or g[0] == "commit":
