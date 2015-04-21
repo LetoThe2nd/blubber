@@ -402,6 +402,8 @@ elif sys.argv[cmd_index] == "setup":
 	execute_poky_command("")
 	setup_bblayers(c)
 	setup_local(c)
+	if "SETUP_MESSAGE" in c.blubber:
+		print(c.blubber["SETUP_MESSAGE"]);
 elif sys.argv[cmd_index] == "shell":
 	execute_poky_command(SHELL)
 elif sys.argv[cmd_index] == "run":
