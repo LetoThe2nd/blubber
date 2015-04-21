@@ -228,7 +228,7 @@ def print_help():
 	print("    -f filename    Use 'filename' as configuration instead of")
 	print("                     default 'Blubberfile'")
 	print("  Supported commands:")
-	print("    build          bitbakes the default target if DEFAULT_BUILD is set in the")
+	print("    build          bitbakes the default target if BUILD_DEFAULT is set in the")
 	print("                     [blubber] section of the Blubberfile")
 	print("    help           Shows this help message")
 	print("    create         Creates a minimal Blubberfile")
@@ -400,7 +400,7 @@ elif sys.argv[cmd_index] == "build":
 		print("will build default target " + c.blubber["BUILD_DEFAULT"])
 		execute_poky_command("bitbake " + c.blubber["BUILD_DEFAULT"])
 	else:
-		print("no DEFAULT_BUILD set, aborting.")
+		print("no BUILD_DEFAULT set, aborting.")
 else:
 	print("could not recognize commmand '" + sys.argv[cmd_index] + "'")
 	print_help()
