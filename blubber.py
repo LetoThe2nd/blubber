@@ -198,6 +198,14 @@ class Config:
 		self.local = []
 		self.blubber = {}
 		self.subconfigs = {}
+		self.BUILD_DEFAULT = "BUILD_DEFAULT"
+		self.NO_BASE_CONFIG = "NO_BASE_CONFIG"
+	def has_base_config(self):
+		if self.NO_BASE_CONFIG in self.blubber:
+			value = self.blubber[self.NO_BASE_CONFIG]
+			if not value == None and not value == 0 and not value == "" and not value == "0" and not value == False and not value == "False":
+				return False
+		return True
 	def assert_subconfig(self, ident):
 		if not ident in self.subconfigs:
 			self.subconfigs[ident] = Config()
@@ -229,109 +237,118 @@ class Config:
 		else:
 			self.blubber[key] = value
 	def execute_poky_command(self, cmd, subconfig = None):
+		result = -1
 		if LOCAL_PLATFORM.is_Linux():
-			cmd_intern = get_source_magic(subconfig) + "; " + cmd
-			subprocess.call(cmd_intern, shell=True, executable=SHELL)
+			if subconfig or self.has_base_config():
+				cmd_intern = get_source_magic(subconfig) + "; " + cmd
+				result = subprocess.call(cmd_intern, shell=True, executable=SHELL)
+		return result
 	def init_build_directories(self, subconfig = None):
-		self.execute_poky_command("", subconfig)
+		if self.has_base_config():
+			self.execute_poky_command("", subconfig)
 		for s in self.subconfigs.keys():
 			self.subconfigs[s].init_build_directories(s)
 	def setup_bblayers(self, subconfig = None, additional = []):
-		bbfile = get_layerfile_path(subconfig)
-		if not os.path.isfile(bbfile):
-			return
-		with open(bbfile) as f:
-			bb = f.readlines()
-		found = -1
-		for l in bb:
-			i = l.strip()
-			if i.startswith("BBLAYERS "):
-				found = bb.index(l)
-				break
-		if found < 0:
-			return
-		p = os.getcwd()
 		real_layers = additional + self.layers
-		for i in real_layers:
-			a = i.split(";")
-			if a[0] == "subrepo":
-				bb.insert(found + 1, "  " + p + "/" + a[2] + "/" + a[1] + " \\" + LINEFEED);
-			elif not a[1] == "poky" and not a[0].endswith("-master"):
-				bb.insert(found + 1, "  " + p + "/" + a[1] + " \\" + LINEFEED);
-		f = open(bbfile, "w")
-		for i in bb:
-			f.write(i)
-		f.close()
+		if self.has_base_config():
+			bbfile = get_layerfile_path(subconfig)
+			if not os.path.isfile(bbfile):
+				return
+			with open(bbfile) as f:
+				bb = f.readlines()
+			found = -1
+			for l in bb:
+				i = l.strip()
+				if i.startswith("BBLAYERS "):
+					found = bb.index(l)
+					break
+			if found < 0:
+				return
+			p = os.getcwd()
+			for i in real_layers:
+				a = i.split(";")
+				if a[0] == "subrepo":
+					bb.insert(found + 1, "  " + p + "/" + a[2] + "/" + a[1] + " \\" + LINEFEED);
+				elif not a[1] == "poky" and not a[0].endswith("-master"):
+					bb.insert(found + 1, "  " + p + "/" + a[1] + " \\" + LINEFEED);
+			f = open(bbfile, "w")
+			for i in bb:
+				f.write(i)
+			f.close()
 		for s in self.subconfigs.keys():
 			self.subconfigs[s].setup_bblayers(s, real_layers)
 	def setup_local(self, subconfig = None, additional = []):
-		localfile = get_conffile_path(subconfig)
-		if not os.path.isfile(localfile):
-			return
-		with open(localfile) as f:
-			lc = f.readlines()
-		lcf = []
-		for i in lc:
-			lcf.append(i.strip())
-		b = ""
-		first = -1
-		fragments = []
-		for l in lcf:
-			if not l == "" and not l.startswith("#"):
-				if first == -1:
-					first = lcf.index(l)
-				b += l
-				if b.endswith("\\"):
-					b = b[:-1]
-				else:
-					b.strip()
-					ass = Fragment(b)
-					ass.first = first
-					ass.last = lcf.index(l)
-					fragments.append(ass)
-					b = ""
-					first = -1
 		real_local = additional + self.local
-		for i in real_local:
-			trig = False
-			for j in fragments:
-				if i.keyword == j.keyword:
-					trig = True
-					del lcf[j.first:j.last + 1]
-					lcf.insert(j.first, i.tofile())
-					if not j.first == j.last:
-						for i in range(j.first, j.last):
-							lcf.insert(j.first + 1, "")
-					break
-			if not trig:
-				lcf.append(i.tofile())
-		f = open(localfile, "w")
-		for i in lcf:
-			f.write(i + LINEFEED)
-		f.close()
+		if self.has_base_config():
+			localfile = get_conffile_path(subconfig)
+			if not os.path.isfile(localfile):
+				return
+			with open(localfile) as f:
+				lc = f.readlines()
+			lcf = []
+			for i in lc:
+				lcf.append(i.strip())
+			b = ""
+			first = -1
+			fragments = []
+			for l in lcf:
+				if not l == "" and not l.startswith("#"):
+					if first == -1:
+						first = lcf.index(l)
+					b += l
+					if b.endswith("\\"):
+						b = b[:-1]
+					else:
+						b.strip()
+						ass = Fragment(b)
+						ass.first = first
+						ass.last = lcf.index(l)
+						fragments.append(ass)
+						b = ""
+						first = -1
+			for i in real_local:
+				trig = False
+				for j in fragments:
+					if i.keyword == j.keyword:
+						trig = True
+						del lcf[j.first:j.last + 1]
+						lcf.insert(j.first, i.tofile())
+						if not j.first == j.last:
+							for i in range(j.first, j.last):
+								lcf.insert(j.first + 1, "")
+						break
+				if not trig:
+					lcf.append(i.tofile())
+			f = open(localfile, "w")
+			for i in lcf:
+				f.write(i + LINEFEED)
+			f.close()
 		for s in self.subconfigs.keys():
 			self.subconfigs[s].setup_local(s, real_local)
-	def show_message(self, ident):
+	def show_message_single(self, ident):
 		key = ident + MESSAGE_TRIGGER
 		if key in self.blubber:
 			print(self.blubber[key]);
+	def show_message_all(self, ident):
+		all_configs = [self] + list(self.subconfigs.values())
+		for s in all_configs:
+			s.show_message_single(ident)
 	def setup(self):
 		self.get_layers()
 		self.init_build_directories()
 		self.setup_bblayers()
 		self.setup_local()
-		all_configs = [self] + list(self.subconfigs.values())
-		for s in all_configs:
-			s.show_message("SETUP")
+		self.show_message_all("SETUP")
 	def build_default(self, subconfig = None):
 		result = False
 		if subconfig:
 			result = self.subconfigs[subconfig].build_default()
-		if not result and "BUILD_DEFAULT" in self.blubber:
-			print("will build default target " + self.blubber["BUILD_DEFAULT"])
-			self.execute_poky_command("bitbake " + self.blubber["BUILD_DEFAULT"])
+		if not result and self.BUILD_DEFAULT in self.blubber and self.has_base_config():
+			print("will build default target " + self.blubber[self.BUILD_DEFAULT])
+			print("Result of build: " + str(self.execute_poky_command("bitbake " + self.blubber[self.BUILD_DEFAULT])))
+			self.show_message_single("BUILD")
 		else:
-			print("no BUILD_DEFAULT set, aborting.")
+			print("no " + self.BUILD_DEFAULT + " set, aborting.")
 
 class Fragment:
 	def __init__(self, s):
