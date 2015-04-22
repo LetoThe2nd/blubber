@@ -339,17 +339,17 @@ class Config:
 		self.setup_bblayers()
 		self.setup_local()
 		self.show_message_all("SETUP")
-	def build_default(self, subconfig = None):
+	def build(self, target = None, subconfig = None):
 		result = 0
-		target = None
-		if subconfig and self.subconfigs[subconfig].has_base_config() and self.BUILD_DEFAULT in self.subconfigs[subconfig].blubber:
-			target = self.subconfigs[subconfig].blubber[self.BUILD_DEFAULT]
-			print("will build default target " + target)
-		elif self.BUILD_DEFAULT in self.blubber and self.has_base_config():
-			target = self.blubber[self.BUILD_DEFAULT]
-			print("will build default target " + target)
-		else:
-			print("no " + self.BUILD_DEFAULT + " set, aborting.")
+		if not target:
+			if subconfig and self.subconfigs[subconfig].has_base_config() and self.BUILD_DEFAULT in self.subconfigs[subconfig].blubber:
+				target = self.subconfigs[subconfig].blubber[self.BUILD_DEFAULT]
+				print("will build default target " + target)
+			elif self.BUILD_DEFAULT in self.blubber and self.has_base_config():
+				target = self.blubber[self.BUILD_DEFAULT]
+				print("will build default target " + target)
+			else:
+				print("no " + self.BUILD_DEFAULT + " set, aborting.")
 		if target:
 			result = self.execute_poky_command("bitbake " + target, subconfig)
 			self.show_message_single("BUILD")
@@ -512,8 +512,9 @@ def print_help():
 	print("                     default 'Blubberfile'")
 	print("    -s subconfig   Use 'subconfig' as configuration instead of default")
 	print("  Supported commands:")
-	print("    build          bitbakes the default target if BUILD_DEFAULT is set in the")
-	print("                     [blubber] section of the Blubberfile")
+	print("    build          bitbakes the target that is given after the command.")
+	print("                     If no target is given, tries to build the default target")
+	print("                     if BUILD_DEFAULT is set in the [blubber] section of the Blubberfile")
 	print("    help           Shows this help message")
 	print("    create         Creates a minimal Blubberfile")
 	print("    setup          Sets up the layers and build directory according to the Blubberfile")
@@ -588,7 +589,10 @@ elif cmd in CMD_RUN:
 		cmd += i.strip() + " "
 	result = c.execute_poky_command(cmd, SUBCONFIG)
 elif cmd in CMD_BUILD:
-	result = c.build_default(SUBCONFIG)
+	target = None
+	if len(sys.argv) > cmd_index + 1:
+		target = sys.argv[cmd_index + 1]
+	result = c.build(target, SUBCONFIG)
 else:
 	print("could not recognize commmand '" + sys.argv[cmd_index] + "'")
 	print_help()
