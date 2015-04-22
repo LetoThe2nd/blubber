@@ -251,7 +251,7 @@ class Config:
 		if found < 0:
 			return
 		p = os.getcwd()
-		real_layers = self.layers + additional
+		real_layers = additional + self.layers
 		for i in real_layers:
 			a = i.split(";")
 			if a[0] == "subrepo":
@@ -291,7 +291,7 @@ class Config:
 					fragments.append(ass)
 					b = ""
 					first = -1
-		real_local = self.local + additional
+		real_local = additional + self.local
 		for i in real_local:
 			trig = False
 			for j in fragments:
