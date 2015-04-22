@@ -237,7 +237,7 @@ class Config:
 		else:
 			self.blubber[key] = value
 	def execute_poky_command(self, cmd, subconfig = None):
-		result = -1
+		result = 0
 		if LOCAL_PLATFORM.is_Linux():
 			if subconfig or self.has_base_config():
 				cmd_intern = get_source_magic(subconfig) + "; " + cmd
@@ -340,15 +340,20 @@ class Config:
 		self.setup_local()
 		self.show_message_all("SETUP")
 	def build_default(self, subconfig = None):
-		result = False
-		if subconfig:
-			result = self.subconfigs[subconfig].build_default()
-		if not result and self.BUILD_DEFAULT in self.blubber and self.has_base_config():
-			print("will build default target " + self.blubber[self.BUILD_DEFAULT])
-			print("Result of build: " + str(self.execute_poky_command("bitbake " + self.blubber[self.BUILD_DEFAULT])))
-			self.show_message_single("BUILD")
+		result = 0
+		target = None
+		if subconfig and self.subconfigs[subconfig].has_base_config() and self.BUILD_DEFAULT in self.subconfigs[subconfig].blubber:
+			target = self.subconfigs[subconfig].blubber[self.BUILD_DEFAULT]
+			print("will build default target " + target)
+		elif self.BUILD_DEFAULT in self.blubber and self.has_base_config():
+			target = self.blubber[self.BUILD_DEFAULT]
+			print("will build default target " + target)
 		else:
 			print("no " + self.BUILD_DEFAULT + " set, aborting.")
+		if target:
+			result = self.execute_poky_command("bitbake " + target, subconfig)
+			self.show_message_single("BUILD")
+		return result
 
 class Fragment:
 	def __init__(self, s):
@@ -537,6 +542,7 @@ if len(sys.argv) <= 1:
 	print_help()
 	exit(0)
 cmd_index = 1
+result = 0
 while (len(sys.argv) > cmd_index) and (sys.argv[cmd_index].startswith("-")):
 	if sys.argv[cmd_index] == "-f":
 		if len(sys.argv) > cmd_index + 1:
@@ -580,9 +586,11 @@ elif cmd in CMD_RUN:
 	cmd = ""
 	for i in a:
 		cmd += i.strip() + " "
-	c.execute_poky_command(cmd, SUBCONFIG)
+	result = c.execute_poky_command(cmd, SUBCONFIG)
 elif cmd in CMD_BUILD:
-	c.build_default(SUBCONFIG)
+	result = c.build_default(SUBCONFIG)
 else:
 	print("could not recognize commmand '" + sys.argv[cmd_index] + "'")
 	print_help()
+
+quit(result)
