@@ -35,7 +35,7 @@ Despite that, it can already do some magic:
 - Environment variables are honoured during the setup step and can be used to override the Blubberfile settings
 - Opening a shell properly initialized for the build
 
-How dows it work?
+How does it work?
 -----------------
 
 Blubber borrows a lot of ideas from make. That means, the only thing your have to do is to drop a _Blubberfile_ in the directory that you want to work in. (So far it has to be named Blubberfile explicitly. See ToDo list below.) Then you can fire up blubber and be done. Blubber itself is a one-file script that can be dropped into the project directory, but should also work fine when called from $PATH or such. So this is how you set up your build with Blubber:
