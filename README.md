@@ -6,7 +6,7 @@ Abstract/Motivation
 
 A friendly tool for managing your yocto/poky projects :)
 What does this mean? When setting up your local environment for building a yocto/poky based project, you usually follow these steps:
-(More or less of course, there are lots of variations based on your worklow and personal likings.)
+(More or less of course, there are lots of variations based on your workflow and personal likings.)
 
 1. Get poky (download and unpack, or git clone)
 2. Get the layers (download and unpack, git clone, svn co, whatever) that are necessary for your build
