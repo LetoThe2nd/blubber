@@ -1,0 +1,10 @@
+[layers]
+git;poky;git://git.yoctoproject.org/poky
+
+[local]
+MACHINE ??= "qemuarm"
+PACKAGE_CLASSES ?= "package_ipk"
+DISTRO = "poky-bleeding"
+
+[blubber]
+BUILD_DEFAULT = "core-image-minimal"
