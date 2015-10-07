@@ -34,6 +34,8 @@ Despite that, it can already do some magic:
 - Running arbitrary commands with proper shell setup (source-ed poky/oe-init-build-env) for the configured project.
 - Environment variables are honoured during the setup step and can be used to override the Blubberfile settings
 - Opening a shell properly initialized for the build
+- Kicking off a default build
+- Creating multiple build directories and therefore local.conf setups for environments that otherwise share the layer set.
 
 How does it work?
 -----------------
@@ -43,7 +45,13 @@ Blubber borrows a lot of ideas from make. That means, the only thing your have t
 0. Put blubber.py into a directory in your $PATH or just the project directory that you want to work in.
 1. Get the Blubberfile for your project
 2. Fire up blubber.py setup
-... Done. Now you can run your builds - either using the traditional way, or by issuing "blubber.py run bitbake core-image-minimal" for example. Blubber will take everything after the "run" command and just execute it in the build directory as if you had prepared the shell and then typed it manually. It has the advantage though, that its not necessary to keep track of the shells state anymore. And the shell will be unchanged afterwards, as blubber intently uses a sub shell.
+... Done. Now you can run your builds.
+
+3.1. Using the traditional way: Source oe-init-build-env, then use bitbake.
+OR
+3.2. Using blubber as a wrapper: "blubber.py run bitbake core-image-minimal" for example. Blubber will take everything after the "run" command and just execute it in the build directory as if you had prepared the shell and then typed it manually. It has the advantage though, that its not necessary to keep track of the shells state anymore. And the shell will be unchanged afterwards, as blubber intently uses a sub shell.
+OR
+3.3. If the Blubberfile offers a default target, just kick off "blubber.py build"
 
 Design decisions / ToDo List
 ----------------------------
@@ -51,9 +59,9 @@ Design decisions / ToDo List
 Blubber intently is constructed as a one-file script so far. This means you can easily drop it everywhere and just execute it.
 What shall go into blubber in the (near) future?
 - Error checking!
-- Differently named Blubberfiles (think: make -f Foobar.txt)
 - Getting layers from svn, ftp, tarballs, or just plain file copy
 - Refreshing the Blubberfile after you changed something in conf/{local,bblayers}.conf
+-  Possibly switching to another Blubberfile format, as the script includes a handwritten parser (OUCH!) at the moment. Maybe something XML?
 - Code base improvements...
 
 If sounds interesting, please have try - and scream loudly if you have comments, questions...
