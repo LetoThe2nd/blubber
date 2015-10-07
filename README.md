@@ -46,12 +46,10 @@ Blubber borrows a lot of ideas from make. That means, the only thing your have t
 1. Get the Blubberfile for your project
 2. Fire up blubber.py setup
 ... Done. Now you can run your builds.
-
-3.1. Using the traditional way: Source oe-init-build-env, then use bitbake.
-OR
-3.2. Using blubber as a wrapper: "blubber.py run bitbake core-image-minimal" for example. Blubber will take everything after the "run" command and just execute it in the build directory as if you had prepared the shell and then typed it manually. It has the advantage though, that its not necessary to keep track of the shells state anymore. And the shell will be unchanged afterwards, as blubber intently uses a sub shell.
-OR
-3.3. If the Blubberfile offers a default target, just kick off "blubber.py build"
+3. Building is possible using a couple of different ways:
+  1. Using the traditional way: Source oe-init-build-env, then use bitbake. _OR_
+  2. Using blubber as a wrapper: "blubber.py run bitbake core-image-minimal" for example. Blubber will take everything after the "run" command and just execute it in the build directory as if you had prepared the shell and then typed it manually. It has the advantage though, that its not necessary to keep track of the shells state anymore. And the shell will be unchanged afterwards, as blubber intently uses a sub shell. _OR_
+  3. If the Blubberfile offers a default target, just kick off "blubber.py build"
 
 Design decisions / ToDo List
 ----------------------------
